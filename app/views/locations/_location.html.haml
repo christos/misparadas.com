@@ -1,17 +1,15 @@
 %section.location{'data-expected-url' => arrivals_location_url(location), :id => dom_id(location)}
   %h1
-    %span.code= "#{location.emt_code} - "
     = location.name
-    %span.distance= distance_in_meters(location)
+    %span.code= " (parada #{location.emt_code})"
 
-  = google_map location.lat, location.lng
   %ul.routes
     - location.routes.each do |route|
     
       %li{:id => dom_id(route)}
+        %p.expected{ :class => "estimate_route_#{route.line.try(:name)}" }
+          = image_tag 'ajax-loader.gif'
         - if @choices.collect(&:favourite_route).include?(route)
-          %p.expected{ :class => "estimate_route_#{route.line.try(:name)}" }
-            &hellip;
           - form_for @choices.select {|c| c.favourite_route == route}.first, :html => {:method => :delete, :class => 'choice'} do |f|
             %button{:type => 'submit'}
             %strong
@@ -21,8 +19,6 @@
               &rarr;
               = route.destination
         - else
-          %p.expected{ :class => "estimate_route_#{route.line.try(:name)}" }
-            &hellip;
           - form_for Choice.new, :html => {:method => :post} do |f|
             = f.hidden_field :favourite_route_id, :value => route.id
             = f.hidden_field :location_id, :value => location.id

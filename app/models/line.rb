@@ -1,7 +1,7 @@
 class Line < ActiveRecord::Base
   
-  has_many :routes
+  has_many :routes, :dependent => :destroy
   
-  validates_uniqueness_of :name
+  validates_uniqueness_of :name, :emt_code
     
 end

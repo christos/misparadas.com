@@ -1,10 +1,29 @@
-- Investigate lines without routes (e.g. cibeles)
-- Show introduction paragraph if no search and no choices
-- Use header gradient image from sprite (for IE compatiblity)
-- Investigate whay various locations are without routes
-- Merge Mark's CSS iPhone stylesheet
+Now:
 
+- What to do with Locations that are the end of the Route? (e.g. parada 74)
 - Rake task to remove Locations that are not on the website
-- Rake task to add Route destinations
+- Migrate Choices to use location.emt_code and favourite_route_id => line.emt_code / route.direction
+
+Improvements:
+
+- Display a single map if multiple locations are encountered
+- Investigate how to integrate GetTimeLines.xml
+- Proxy arrival requests using either node.js or sinatra/padrino or metal
+- Use header gradient image from sprite (for IE compatiblity)
+- Rudimentary tests (cucumber or steak)
+- Admin (Choices.count and various EMT statistics)
+- Search for "N20", "M1"
+
 - Cache http requests
 - Parallelize http request
+
+- Use free GoogleAdWords 44P2-MYM9-QYWL-CF6G-QBL
+
+Done:
+
+✓ Investigate whay various locations are without routes
+✓ Investigate lines without routes (e.g. cibeles)
+✓ Show introduction paragraph if no search and no choices
+✓ Merge Mark's CSS iPhone stylesheet
+✓ Rake task to add Route destinations
+

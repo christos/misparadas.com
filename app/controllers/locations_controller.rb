@@ -19,11 +19,15 @@ class LocationsController < ApplicationController
     
     if params[:q].present?
       begin
-        @locations = Location.find(:all, interpret_search_params(params))
+        args = interpret_search_params(params)
+        @locations = Location.find(:all, args)
+        @origin = args[:origin] || [@locations.first.lat, @locations.first.lng].join(',')
+        @markers = @locations.collect {|l| {:lat => l.lat, :lng => l.lng, :label => l.emt_code}}
       rescue
         @locations = []
       end
     else
+      
       @locations = []
       flash[:alert] = "Debes de indicar una dirección física. Por ejemplo: Paseo Recoletos"
     end

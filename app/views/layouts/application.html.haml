@@ -9,7 +9,7 @@
     = javascript_include_tag "http://html5shiv.googlecode.com/svn/trunk/html5.js"
     
   = stylesheet_link_tag ['content'], :cache => 'app'
-  = javascript_include_tag ['jquery', 'jquery.form', 'jquery.example.min'], :cache => 'jquery.all'
+  = javascript_include_tag ['jquery', 'jquery.form', 'jquery.example.min'] # not for Heroku!, :cache => 'jquery.all'
 
 %body
   %header.layout

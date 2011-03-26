@@ -70,7 +70,7 @@ namespace :emt do
     # lat, lng
     rows.each do |row|
       begin
-        location = Location.find_by_emt_code!(row[0])
+        location = Location.find_by_emt_code!(row[0].to_s)
         location.update_attributes(:lat => row[2].to_f, :lng => row[3].to_f)
       rescue
         puts "#{$!}"

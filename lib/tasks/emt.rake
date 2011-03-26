@@ -98,7 +98,7 @@ namespace :emt do
           direction = ((section/:SecDetail).inner_html.to_i) == 10 ? 'normal' : 'reverse'
 
           line = Line.find_by_emt_code!((section/:Line).inner_html.to_i)
-          location = Location.find_by_emt_code!((section/:Node).inner_html.to_i)
+          location = Location.find_by_emt_code!((section/:Node).inner_html.to_s)
 
           route = line.routes.find_or_create_by_direction(direction)
           stop = route.stops.find_or_create_by_location_id(location.id)

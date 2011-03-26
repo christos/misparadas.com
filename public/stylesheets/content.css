@@ -1,8 +1,8 @@
 body {
-  background: #eee url(/images/bodybg.png) 0 -1px repeat-x;
+  background: #eeeeee url(/images/bodybg.png) 0 -1px repeat-x;
   padding: 0;
   margin: 0 0 50px 0;
-  font-family: 'Helvetica Neue', Arial, Helvetica, sans-serif;
+  font-family: "Helvetica Neue", Arial, Helvetica, sans-serif;
   font-size: 75%;
   line-height: 1.5; }
 
@@ -18,18 +18,17 @@ header.layout {
   header.layout h1 {
     display: none; }
 
-
 p.introduction {
-  background: #000 url('/images/sprites.png') 0 -120px no-repeat;
+  background: black url("/images/sprites.png") 0 -120px no-repeat;
   width: 360px;
-  color: #ccc;
+  color: #cccccc;
   font-size: 15px;
   padding: 10px 10px 30px 10px;
   height: 59px;
   line-height: 130%;
   margin-bottom: 3px; }
   p.introduction strong {
-    color: #fff; }
+    color: white; }
 
 form.search {
   margin: 0 0 20px 0;
@@ -37,7 +36,7 @@ form.search {
   form.search input {
     padding: 7px;
     font-size: 13px;
-    background: #fff url(/images/textboxbg.png) top left no-repeat;
+    background: white url(/images/textboxbg.png) top left no-repeat;
     border: 1px solid #c8c8c8;
     position: relative;
     width: 243px;
@@ -56,10 +55,10 @@ form.search {
     border: 0px;
     font-size: 14px;
     width: 107px;
-    color: #000;
+    color: black;
     text-align: center;
     font-weight: normal;
-    text-shadow: 0px 1px 1px #fff; }
+    text-shadow: 0px 1px 1px white; }
   form.search button:hover {
     background-position: -151px -40px; }
   form.search button:active {
@@ -82,26 +81,26 @@ article.choices, article.results {
       position: relative;
       padding: 5px 15px;
       margin: 20px 0 0 0;
-      background: #000 url('/images/backgrounds/dark_gradient.png') 0 0 repeat-x;
+      background: black url("/images/backgrounds/dark_gradient.png") 0 0 repeat-x;
       font-size: 14px;
       text-transform: lowercase;
-      color: #fff; }
+      color: white; }
       article.choices section h1 img, article.results section h1 img {
         position: absolute;
         top: -10px;
         right: -8px;
         padding: 2px 2px 2px 2px;
-        border: 1px solid #ccc;
-        background-color: #fff;
+        border: 1px solid #cccccc;
+        background-color: white;
         width: 21px;
         height: 21px; }
     article.choices section img, article.results section img {
       vertical-align: bottom;
-      border-left: 1px solid #ccc;
-      border-right: 1px solid #ccc; }
+      border-left: 1px solid #cccccc;
+      border-right: 1px solid #cccccc; }
 
 article.choices section h1 {
-  color: #FC6; }
+  color: #ffcc66; }
 
 ul.routes {
   list-style-type: none;
@@ -114,10 +113,10 @@ ul.routes {
   -moz-border-radius-bottomright: 10px;
   -webkit-border-bottom-right-radius: 10px;
   border-bottom-right-radius: 10px;
-  -webkit-box-shadow: rgb(187, 187, 187) 0px 1px 2px; }
+  -webkit-box-shadow: #bbbbbb 0px 1px 2px; }
   ul.routes li {
-    background-color: #fff;
-    border-top: 1px solid #ccc;
+    background-color: white;
+    border-top: 1px solid #cccccc;
     padding: 10px 15px;
     overflow: auto;
     line-height: 24px;
@@ -125,7 +124,7 @@ ul.routes {
     ul.routes li form {
       overflow: auto; }
       ul.routes li form span.destination {
-        color: #999;
+        color: #999999;
         text-transform: lowercase;
         text-indent: 30px; }
       ul.routes li form button {
@@ -138,9 +137,9 @@ ul.routes {
         height: 19px;
         line-height: 24px; }
     ul.routes li form.new_choice button {
-      background: #fff url('/images/buttons/star_empty.png') 0 0 no-repeat; }
+      background: white url("/images/buttons/star_empty.png") 0 0 no-repeat; }
     ul.routes li form.choice button {
-      background: #fff url('/images/buttons/star_selected.png') 0 0 no-repeat; }
+      background: white url("/images/buttons/star_selected.png") 0 0 no-repeat; }
     ul.routes li p.expected {
       float: right;
       line-height: 25px;
@@ -149,21 +148,21 @@ ul.routes {
         vertical-align: middle; }
 
 form input.example {
-  color: #999; }
+  color: #999999; }
 
 p.empty {
   font-size: 20px;
-  color: #999;
+  color: #999999;
   line-height: 130%; }
 
 p.linkInfo {
-  background-color: #FFF2D6;
+  background-color: #fff2d6;
   font-weight: bold;
   padding: 10px 15px;
-  border-bottom: solid #ccc 1px;
-  -webkit-box-shadow: 0 1px 2px #bbb;
-  -moz-box-shadow: 0 1px 2px #bbb;
-  box-shadow: 0 1px 2px #bbb;
+  border-bottom: solid #cccccc 1px;
+  -webkit-box-shadow: 0 1px 2px #bbbbbb;
+  -moz-box-shadow: 0 1px 2px #bbbbbb;
+  box-shadow: 0 1px 2px #bbbbbb;
   -moz-border-radius-bottomleft: 10px;
   -webkit-border-bottom-left-radius: 10px;
   border-bottom-left-radius: 10px;

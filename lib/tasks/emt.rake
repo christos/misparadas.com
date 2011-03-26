@@ -48,7 +48,7 @@ namespace :emt do
       # ignore lines EMT
       # next if (line/:Label).inner_html == "EMT"
       attrs = {
-        :emt_code => (element/:Node).inner_html.to_i,
+        :emt_code => (element/:Node).inner_html,
         :name => (element/:Name).inner_html.strip
       }
       location = Location.find_or_create_by_emt_code(attrs[:emt_code])

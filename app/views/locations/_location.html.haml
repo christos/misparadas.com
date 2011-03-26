@@ -10,8 +10,6 @@
         %p.expected{ :class => "estimate_route_#{route.line.try(:name)}" }
           = image_tag 'ajax-loader.gif'
         - if @choices.collect(&:favourite_route).include?(route)
-          %p.expected{ :class => "estimate_route_#{route.line.try(:name)}" }
-            &hellip;
           - form_for @choices.select {|c| c.favourite_route == route}.first, :html => {:method => :delete, :class => 'choice'} do |f|
             %button{:type => 'submit'}
             %strong
@@ -21,8 +19,6 @@
               &rarr;
               = route.destination
         - else
-          %p.expected{ :class => "estimate_route_#{route.line.try(:name)}" }
-            &hellip;
           - form_for Choice.new, :html => {:method => :post} do |f|
             = f.hidden_field :favourite_route_id, :value => route.id
             = f.hidden_field :location_id, :value => location.id

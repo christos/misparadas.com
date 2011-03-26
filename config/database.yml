@@ -8,6 +8,13 @@ development:
   adapter: sqlite3
   database: db/development.sqlite3
   encoding: utf8
-  pool: 5
-  timeout: 5000
+  database: misparadas_development
+  username: root
+  host: localhost
+  password:
+  # adapter: sqlite3
+  # database: db/development.sqlite3
+  # encoding: utf8
+  # pool: 5
+  # timeout: 5000
 

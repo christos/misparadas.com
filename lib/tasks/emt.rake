@@ -1,100 +1,125 @@
 namespace :emt do
-  
-  desc 'Import bus stop data from emt.sqlite database'
-  task :import_bus_stops => :environment do
+
+  desc 'Reset ALL database data'
+  task :reset_db => :environment do
+    Location.delete_all
+    Line.delete_all
+    Route.delete_all
+    Stop.delete_all
+  end
+
+  desc 'Import Lines from GetListLines.xml'
+  task :import_lines => :environment do
+    today =  Date.today.strftime('%d/%m/%Y')
+    url = URI.parse(AppConfig.urls.lines % today)
+    # Line, Label, NameA, NameB
+
+    puts "-"*80
+    puts "Importing Lines from: #{url}"
+    doc = Hpricot.XML(Net::HTTP.get(url))
+    (doc/:REG).each do |element|
+      # ignore lines EMT
+      next if (element/:Label).inner_html == "EMT"
+      attrs = {
+        :emt_code => (element/:Line).inner_html.to_i,
+        :name => (element/:Label).inner_html.strip,
+        :terminal_a => (element/:NameA).inner_html.strip,
+        :terminal_b => (element/:NameB).inner_html.strip
+      }
+      line = Line.find_or_create_by_emt_code(attrs[:emt_code])
+      line.update_attributes(attrs)
+      puts "\tLine #{line.name} (#{line.emt_code}): #{line.terminal_a} -> #{line.terminal_b}"
+    end
+    puts "Imported #{Line.count} lines."
+
+  end
+
+  desc 'Import Locations from GetNodeLines.xml'
+  task :import_locations => :environment do
+    today =  Date.today.strftime('%d/%m/%Y')
+
+    url = URI.parse(AppConfig.urls.locations % today)
+
+    # Node/emt_code, Name
+    puts "-"*80
+    puts "Importing Locations from: #{url}"
+    doc = Hpricot.XML(Net::HTTP.get(url))
+    (doc/:REG).each do |element|
+      # ignore lines EMT
+      # next if (line/:Label).inner_html == "EMT"
+      attrs = {
+        :emt_code => (element/:Node).inner_html.to_i,
+        :name => (element/:Name).inner_html.strip
+      }
+      location = Location.find_or_create_by_emt_code(attrs[:emt_code])
+      location.update_attributes(attrs)
+      puts "\tLocation #{location.emt_code}-#{location.name}"
+    end
+    puts "Imported #{Location.count} locations."
+  end
+
+  desc 'Import Locations coordinates from emt.sqlite'
+  task :import_location_coordinates => :environment do
     require 'sqlite3'
 
     db = SQLite3::Database.new(File.join(Rails.root, 'db', 'emt.sqlite'))
-    Location.destroy_all
-    Line.destroy_all
-    Route.destroy_all
-    db.execute("select * from BUSSTOP").each do |row|
-      puts row.inspect
+    rows = db.execute("select * from BUSSTOP")
+
+    puts "-"*80
+    puts "Importing Location coordinates for #{rows.size} entries"
+    # lat, lng
+    rows.each do |row|
       begin
-        location = Location.create! :emt_code => row[0], :name => row[1], :lat => row[2].to_f, :lng => row[3].to_f
-        [row[4].split(' '), row[5].split(' ')].transpose.each do |pair|
-          direction = ((pair.last[-1..-1] == '1') ? "normal" : "reverse")
-          emt_line =  pair.last[0..-3]
-          line = Line.find_or_create_by_name(pair.first)
-          puts "\t #{line.name} [#{direction} direction]"
-          route = Route.find_or_create_by_line_id_and_direction(line.id, direction)
-          atts = {:emt_line => emt_line}
-          db.execute("select * from LINE where numberBusLine = '#{pair.first}'").each do |row2|
-            direction == "normal" ? atts.merge!({:origin => row2[4], :destination => row2[5]}) : atts.merge!({:origin => row2[5], :destination => row2[4]})
-          end
-          route.update_attributes(atts)
-          location.routes << route
+        location = Location.find_by_emt_code!(row[0])
+        location.update_attributes(:lat => row[2].to_f, :lng => row[3].to_f)
+      rescue
+        puts "#{$!}"
+        puts "\t #{row.inspect}:"
+      end
+    end
+
+  end
+
+  desc 'Import Stops from GetRouteLines.xml'
+  task :import_stops => :environment do
+    today =  Date.today.strftime('%d/%m/%Y')
+
+    puts "-"*80
+
+
+    Line.all.each do |line|
+      url = URI.parse(AppConfig.urls.routes % [today, line.emt_code])
+      puts "Importing Line #{line.emt_code} from: #{url}"
+
+      doc = Hpricot.XML(Net::HTTP.get(url))
+
+      begin
+        (doc/:REG).each_with_index do |section, i|
+          direction = ((section/:SecDetail).inner_html.to_i) == 10 ? 'normal' : 'reverse'
+
+          line = Line.find_by_emt_code!((section/:Line).inner_html.to_i)
+          location = Location.find_by_emt_code!((section/:Node).inner_html.to_i)
+
+          route = line.routes.find_or_create_by_direction(direction)
+          stop = route.stops.find_or_create_by_location_id(location.id)
+          stop.update_attributes(:total_distance => (section/:Distance).inner_html.to_i, 
+          :prev_distance => (section/:DistStopPrev).inner_html.to_i )
         end
       rescue
         puts "#{$!}"
       end
+
     end
   end
-  
-  desc 'Syncs EMT lines information against our database'
-  task :sync_lines => :environment do
-    # Get lines from EMT
-    url = URI.parse(AppConfig.urls.lines)
-    doc = Hpricot.XML(Net::HTTP.get(url))
-    emt_lines = (doc/:REG).map do |line| 
-      # ignore lines EMT
-      next if (line/:Label).inner_html == "EMT" 
-      {
-        :name => (line/:Label).inner_html, 
-        :emt_line => (line/:Line).inner_html,
-        :name_a => (line/:NameA).inner_html,
-        :name_b => (line/:NameB).inner_html,
-      }
-    end.compact
-    
-    lines_names = emt_lines.map{ |h| h[:name] }
-    names = Line.all.map(&:name)
-    
-    # non existing lines in local
-    not_existing_in_local = lines_names - names
-    # non existin lines in remote, but in local
-    not_existing_in_remote = names - lines_names
-    
-    not_existing_in_local.each do |name|
-      emt_line = emt_lines.select{ |emt_line| emt_line[:name] == name }.first
-      puts "Creating line: #{emt_line[:name]}"
-      line = Line.create :name => emt_line[:name]
 
-      # Get routes from this line
-      url = URI.parse(AppConfig.urls.routes % emt_line[:emt_line])
-      doc = Hpricot.XML(Net::HTTP.get(url))
-
-      remote_routes = (doc/:REG).map do |remote_route| 
-        normal = (remote_route/:SecDetail).inner_html == '10' ? true : false
-        {
-          :direction => normal ? 'normal' : 'reverse',
-          :name => (remote_route/:Name).inner_html, 
-          :emt_code => (remote_route/:Node).inner_html,
-          :emt_line => emt_line[:emt_line],
-          :origin => normal ? emt_line[:name_a] : emt_line[:name_b],
-          :destination => normal ? emt_line[:name_b] : emt_line[:name_a]
-        }
-      end.compact
-      
-      # Create routes for the line
-      remote_routes.each do |remote_route|        
-        emt_code = remote_route.delete(:emt_code)
-        route = line.routes.create remote_route
-        puts "  creating route: #{route.name}"
-        begin
-          Location.find_by_emt_code(emt_code).routes << route
-        rescue
-          puts "Location #{emt_code} - #{$!}"
-        end
-      end
-    end
-
-    puts
-    puts
-    not_existing_in_remote.each do |line_name|
-      if line = Line.find_by_name(line_name)
-        line.destroy
-        puts "Removing line: #{line_name}"
+  desc 'Remove unused Locations/Routes/Stops'
+  task :cleanup => :environment do
+    
+    Location.find_each do |location|
+      if location.routes.empty?
+        puts "\t Routeless location #{location.emt_code}-#{location.name} - DELETE"
+      elsif location.lat.blank? && location.lng.blank?
+        puts "\t Unlocatable Location #{location.emt_code}-#{location.name} - DELETE"
       end
     end
   end

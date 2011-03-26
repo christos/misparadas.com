@@ -1,6 +1,6 @@
 class Route < ActiveRecord::Base
   
-  has_many :stops
+  has_many :stops, :order => 'total_distance ASC', :dependent => :destroy
   has_many :locations, :through => :stops
 
   belongs_to :line
@@ -11,4 +11,7 @@ class Route < ActiveRecord::Base
     "<span class='expected' id='estimate_route_#{line.name}'>...</span>"
   end
   
+  def destination
+    direction == 'normal' ? line.terminal_b : line.terminal_a
+  end
 end

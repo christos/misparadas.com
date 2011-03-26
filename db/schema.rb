@@ -9,7 +9,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20100430183556) do
+ActiveRecord::Schema.define(:version => 20100603230048) do
 
   create_table "choices", :force => true do |t|
     t.string   "slug"
@@ -23,6 +23,9 @@ ActiveRecord::Schema.define(:version => 20100430183556) do
     t.string   "name"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.string   "terminal_a"
+    t.string   "terminal_b"
+    t.integer  "emt_code"
   end
 
   create_table "locations", :force => true do |t|
@@ -33,6 +36,10 @@ ActiveRecord::Schema.define(:version => 20100430183556) do
     t.datetime "created_at"
     t.datetime "updated_at"
   end
+
+  add_index "locations", ["emt_code"], :name => "index_locations_on_emt_code"
+  add_index "locations", ["lat"], :name => "index_locations_on_lat"
+  add_index "locations", ["lng"], :name => "index_locations_on_lng"
 
   create_table "routes", :force => true do |t|
     t.string   "destination"
@@ -50,6 +57,11 @@ ActiveRecord::Schema.define(:version => 20100430183556) do
     t.integer  "location_id"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.integer  "total_distance"
+    t.integer  "prev_distance"
   end
+
+  add_index "stops", ["location_id"], :name => "index_stops_on_location_id"
+  add_index "stops", ["route_id"], :name => "index_stops_on_route_id"
 
 end

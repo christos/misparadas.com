@@ -5,7 +5,7 @@
     Tiempos de espera para los próximos autobuses de la EMT Madrid en tu parada.
     
 - form_for :location, :url => locations_url, :html => {:method => :get, :class => 'search'} do
-  = text_field_tag 'q', params[:q], :type => 'number'
+  = text_field_tag 'q', params[:q]
   %button{:type => 'submit', :class => 'buscar'}
     %span Buscar
 
@@ -14,7 +14,13 @@
   -if @locations.present? && @choices.empty?
     %p.linkInfo.roundedTop.roundedBottom
       Pincha en una estrella para guardar tu linea favorita
-      
+
+  = map_with_markers(@origin, @markers).to_html if @origin.present?
+  
+  - if @origin.present?
+    %div.map
+      = map_with_markers(@origin, @markers).div 
+  
   = render @locations
   - if @locations.empty? && params[:q]
     %p.empty

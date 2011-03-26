@@ -26,7 +26,7 @@ module ApplicationHelper
                                            :lng => m[:lng],
                                            :html => "#{m[:label]}",
                                            :icon => GoogleMap::Icon.new(:map => map, 
-                                                          :image_url => "http://dl.dropbox.com/u/31017/bus.png",
+                                                          :image_url => "http://dl.dropbox.com/u/659167/bus.png",
                                                           :width => 22, :height => 22, :shadow_url => nil
                                                           )
                         

@@ -86,35 +86,32 @@ namespace :emt do
 
     puts "-"*80
 
-    begin
-      puts "Importing Stops from: #{url}"
-    
-      url = URI.parse(AppConfig.urls.routes % today)
-    
+
+    Line.all.each do |line|
+      url = URI.parse(AppConfig.urls.routes % [today, line.emt_code])
+      puts "Importing Line #{line.emt_code} from: #{url}"
+
       doc = Hpricot.XML(Net::HTTP.get(url))
-    rescue Timeout::Error
-      puts "Server Timeout::Error; falling back to  doc/EMT_XML/GetRouteLines.xml"
-      doc =  Hpricot.XML(File.read(File.join(Rails.root, 'doc', 'EMT_XML', 'GetRouteLines.xml')))
-    end
 
-    (doc/:REG).each_with_index do |section, i|
       begin
-        direction = ((section/:SecDetail).inner_html.to_i) == 10 ? 'normal' : 'reverse'
+        (doc/:REG).each_with_index do |section, i|
+          direction = ((section/:SecDetail).inner_html.to_i) == 10 ? 'normal' : 'reverse'
 
-        line = Line.find_by_emt_code!((section/:Line).inner_html.to_i)
-        location = Location.find_by_emt_code!((section/:Node).inner_html.to_i)
+          line = Line.find_by_emt_code!((section/:Line).inner_html.to_i)
+          location = Location.find_by_emt_code!((section/:Node).inner_html.to_i)
 
-        route = line.routes.find_or_create_by_direction(direction)
-        stop = route.stops.find_or_create_by_location_id(location.id)
-        stop.update_attributes(:total_distance => (section/:Distance).inner_html.to_i, 
-                               :prev_distance => (section/:DistStopPrev).inner_html.to_i )
+          route = line.routes.find_or_create_by_direction(direction)
+          stop = route.stops.find_or_create_by_location_id(location.id)
+          stop.update_attributes(:total_distance => (section/:Distance).inner_html.to_i, 
+          :prev_distance => (section/:DistStopPrev).inner_html.to_i )
+        end
       rescue
         puts "#{$!}"
       end
-    end
 
+    end
   end
-  
+
   desc 'Remove unused Locations/Routes/Stops'
   task :cleanup => :environment do
     

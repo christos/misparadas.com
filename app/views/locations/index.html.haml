@@ -15,10 +15,11 @@
     %p.linkInfo.roundedTop.roundedBottom
       Pincha en una estrella para guardar tu linea favorita
 
-  = map_with_markers(@origin, @markers).to_html
+  = map_with_markers(@origin, @markers).to_html if @origin.present?
   
-  %div.map
-    = map_with_markers(@origin, @markers).div
+  - if @origin.present?
+    %div.map
+      = map_with_markers(@origin, @markers).div 
   
   = render @locations
   - if @locations.empty? && params[:q]

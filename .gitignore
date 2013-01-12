@@ -10,4 +10,4 @@ db/*.sqlite3
 *.swo
 public/images/tmp/*
 public/system/*
-
+vendor/bundle
